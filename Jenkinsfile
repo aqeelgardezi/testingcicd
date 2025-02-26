@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        nodejs 'Node18'
+        nodejs 'Node18'  // Assuming you updated to 18 as per commit message
     }
     stages {
         stage('Checkout') {
@@ -12,7 +12,8 @@ pipeline {
         stage('Setup Frontend') {
             steps {
                 dir('frontend') {
-                    sh 'npm install'
+                    // Cache npm dependencies
+                    sh 'npm ci --prefer-offline --cache /var/lib/jenkins/.npm'
                     sh 'npm run build'
                 }
             }
@@ -20,7 +21,8 @@ pipeline {
         stage('Setup Backend') {
             steps {
                 dir('backend') {
-                    sh 'composer install --no-interaction'
+                    // Cache Composer dependencies
+                    sh 'composer install --no-interaction --prefer-dist --no-scripts'
                 }
             }
         }
@@ -28,6 +30,12 @@ pipeline {
             steps {
                 echo 'Setup complete!'
             }
+        }
+    }
+    // Post-build cleanup (optional)
+    post {
+        always {
+            cleanWs()  // Clean workspace to save disk space
         }
     }
 }
