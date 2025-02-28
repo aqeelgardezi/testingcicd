@@ -18,14 +18,6 @@ pipeline {
                 }
             }
         }
-        stage('Setup Backend') {
-            steps {
-                dir('backend') {
-                    // Cache Composer dependencies
-                    sh 'composer install --no-interaction --prefer-dist --no-scripts'
-                }
-            }
-        }
         stage('Finish') {
             steps {
                 echo 'Setup complete!'
